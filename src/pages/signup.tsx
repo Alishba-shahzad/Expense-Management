@@ -2,40 +2,71 @@ import { useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const [error, setError] = useState("");
 
   const handleSignup = async () => {
+    setError("");
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-      alert("Signup successful!");
       navigate("/dashboard");
     } catch (error: any) {
-      alert(error.message);
+      setError(error.message);
     }
   };
 
   return (
-    <div className="p-4">
-      <h2 className="text-2xl font-bold">Sign Up</h2>
-      <input
-        type="email"
-        placeholder="Email"
-        onChange={(e) => setEmail(e.target.value)}
-        className="block my-2 p-2 border"
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        onChange={(e) => setPassword(e.target.value)}
-        className="block my-2 p-2 border"
-      />
-      <button onClick={handleSignup} className="bg-blue-500 text-white px-4 py-2">
-        Sign Up
-      </button>
+    <div className="min-h-screen bg-gradient-to-r from-violet-600 to-indigo-600 flex items-center justify-center px-4">
+      <motion.div
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="backdrop-blur-xl bg-white/30 rounded-2xl shadow-2xl p-8 w-full max-w-md border border-white/20"
+      >
+        <h2 className="text-3xl font-bold text-center text-white mb-6 drop-shadow-sm">
+          Create Account
+        </h2>
+
+        {error && (
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="bg-red-100 text-red-700 p-2 rounded mb-4 text-sm"
+          >
+            {error}
+          </motion.p>
+        )}
+
+        <div className="space-y-4">
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full px-4 py-2 bg-white/80 backdrop-blur-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500"
+          />
+
+          <input
+            type="password"
+            placeholder="Password (min 6 chars)"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full px-4 py-2 bg-white/80 backdrop-blur-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500"
+          />
+
+          <button
+            onClick={handleSignup}
+            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-md transition duration-200 shadow-md hover:shadow-lg"
+          >
+            Sign Up
+          </button>
+        </div>
+      </motion.div>
     </div>
   );
 };
