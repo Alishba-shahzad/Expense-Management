@@ -3,7 +3,7 @@ import Expense from "../models/expense";
 
 const router = Router();
 
-// Get all expenses for a user
+// GET /api/expenses/:userId → fetch all expenses of a user
 router.get("/:userId", async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
@@ -14,26 +14,27 @@ router.get("/:userId", async (req: Request, res: Response) => {
   }
 });
 
-// Add new expense
+// POST /api/expenses → add new expense
 router.post("/", async (req: Request, res: Response) => {
   try {
-    const expense = new Expense(req.body);
-    await expense.save();
-    res.status(201).json(expense);
+    const { userId, category, amount, note, date } = req.body;
+    const newExpense = new Expense({ userId, category, amount, note, date });
+    const savedExpense = await newExpense.save();
+    res.status(201).json(savedExpense);
   } catch (error) {
+    console.error(error);
     res.status(400).json({ error: "Failed to add expense" });
   }
 });
 
-// Delete an expense
+// DELETE /api/expenses/:id → delete by ID
 router.delete("/:id", async (req: Request, res: Response) => {
   try {
     await Expense.findByIdAndDelete(req.params.id);
-    res.status(204).end();
+    res.status(204).send();
   } catch (error) {
     res.status(500).json({ error: "Failed to delete expense" });
   }
 });
 
-// ✅ This makes it a module in TypeScript
 export default router;

@@ -1,6 +1,5 @@
 import mongoose, { Document, Schema } from "mongoose";
 
-// ✅ Define TypeScript interface
 export interface IExpense extends Document {
   userId: string;
   category: string;
@@ -9,15 +8,12 @@ export interface IExpense extends Document {
   date: Date;
 }
 
-// ✅ Define Mongoose schema
-const expenseSchema: Schema = new Schema<IExpense>({
+const expenseSchema: Schema<IExpense> = new Schema({
   userId: { type: String, required: true },
   category: { type: String, required: true },
   amount: { type: Number, required: true },
   note: { type: String },
-  date: { type: Date, default: Date.now },
+  date: { type: Date, default: Date.now }
 });
 
-// ✅ Export model
-const Expense = mongoose.model<IExpense>("Expense", expenseSchema);
-export default Expense;
+export default mongoose.model<IExpense>("Expense", expenseSchema);
