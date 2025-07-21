@@ -133,8 +133,6 @@
 
 // export default Dashboard;
 
-
-
 // import { useEffect, useState } from "react";
 // import { auth } from "../firebase";
 // import { useNavigate } from "react-router-dom";
@@ -170,7 +168,6 @@
 //         date: new Date().toISOString(),
 //       }),
 //     });
-    
 
 //     const newExpense = await res.json();
 //     setExpenses((prev) => [newExpense, ...prev]);
@@ -194,10 +191,8 @@
 //     fetchExpenses();
 //   }, [user]);
 
-  
-
 //   return (
-    
+
 //     <div className="min-h-screen bg-gray-100 p-8">
 //       <h2 className="text-3xl font-bold mb-6 text-center text-violet-700">
 //         Your Expenses
@@ -248,8 +243,6 @@
 
 // export default Dashboard;
 
-
-
 import AddExpenseForm from "./AddExpenseForm";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
@@ -257,10 +250,11 @@ import { auth } from "../firebase";
 import { useNavigate } from "react-router-dom";
 
 type Expense = {
+  userId: string;
   _id: string;
   amount: number;
   category: string;
-  note: string;
+  note?: string;
   date: string;
 };
 
@@ -269,7 +263,9 @@ const Dashboard = () => {
   const [total, setTotal] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [uid, setUid] = useState<string | null>(null);
+  const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
   const user = auth.currentUser;
+  const userId = user?.uid || "";
   const navigate = useNavigate();
 
   const fetchExpenses = async () => {
@@ -282,7 +278,10 @@ const Dashboard = () => {
       const data: Expense[] = await res.json();
       setExpenses(data);
 
-      const totalAmount = data.reduce((sum, expense) => sum + expense.amount, 0);
+      const totalAmount = data.reduce(
+        (sum, expense) => sum + expense.amount,
+        0
+      );
       setTotal(totalAmount);
     } catch (err) {
       console.error(err);
@@ -291,33 +290,52 @@ const Dashboard = () => {
     }
   };
 
-  const addDummyExpense = async () => {
-    if (!user) return;
 
-    const newExpense = {
-      userId: user.uid,
-      amount: 150,
-      category: "Transport",
-      note: "Bus ticket",
-      date: new Date().toISOString(),
-    };
-
+  const deleteExpense = async (id: string) => {
     try {
-      const res = await fetch("http://localhost:5000/api/expenses", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newExpense),
+      const res = await fetch(`http://localhost:5000/api/expenses/${id}`, {
+        method: "DELETE",
       });
 
       if (res.ok) {
-        fetchExpenses(); // Refresh the list
+        fetchExpenses(); // refresh list
       } else {
-        throw new Error("Failed to add dummy expense");
+        alert("Failed to delete expense");
       }
     } catch (err) {
       console.error(err);
+      alert("Error deleting expense");
     }
   };
+
+  
+  const updateExpense = async (id: string, updatedData: any) => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/expenses/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedData),
+      });
+  
+      if (!res.ok) {
+        alert("Failed to save expense"); // <-- ye yahan aa raha
+        return;
+      }
+  
+      const updated = await res.json();
+      console.log("Updated expense:", updated);
+    } catch (err) {
+      console.error("❌ Update error:", err);
+      alert("Request failed");
+    }
+  };
+  
+
+  // const handleEdit = (expense: any) => {
+  //   setEditingExpense(expense); // pass this to AddExpenseForm if you want to edit
+  // };
 
   const logout = async () => {
     await auth.signOut();
@@ -339,18 +357,23 @@ const Dashboard = () => {
   }, [user]);
 
   return (
-    
     <div className="min-h-screen p-6 bg-gray-100">
-       <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
-      <p className="mb-4">Your UID: {user?.uid}</p>
-
-      <AddExpenseForm userId={user?.uid!} onExpenseAdded={fetchExpenses} />
+      <AddExpenseForm
+        userId={userId}
+        onExpenseAdded={fetchExpenses}
+        editingExpense={editingExpense}
+        clearEditing={() => setEditingExpense(null)}
+        onUpdateExpense={updateExpense}
+      />
 
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-violet-700">Dashboard</h1>
         <div>
           <span className="mr-4">{user?.email}</span>
-          <button onClick={logout} className="bg-red-500 text-white px-4 py-2 rounded">
+          <button
+            onClick={logout}
+            className="bg-red-500 text-white px-4 py-2 rounded"
+          >
             Logout
           </button>
         </div>
@@ -362,15 +385,14 @@ const Dashboard = () => {
           <h2 className="text-gray-500">Total Expenses</h2>
           <p className="text-2xl font-bold">${total}</p>
         </div>
+        
         <div className="bg-white shadow p-4 rounded">
           <h2 className="text-gray-500">This Month</h2>
-          <p className="text-2xl font-bold">Coming soon 🔥</p>
+          <p className="text-2xl font-bold">Coming soon </p>
         </div>
         <div className="bg-white shadow p-4 rounded">
           <h2 className="text-gray-500">Add Expense</h2>
-          <button onClick={addDummyExpense} className="mt-2 bg-blue-500 text-white px-4 py-2 rounded">
-            + Add Dummy Expense
-          </button>
+          <p className="mt-2 text-sm text-gray-400">Use form above</p>
         </div>
       </div>
 
@@ -390,15 +412,33 @@ const Dashboard = () => {
                 <th className="p-2">Category</th>
                 <th className="p-2">Amount</th>
                 <th className="p-2">Note</th>
+                <th className="p-2">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {expenses.map((exp) => (
+              {expenses.map((exp: Expense) => (
                 <tr key={exp._id} className="border-t">
-                  <td className="p-2">{new Date(exp.date).toLocaleDateString()}</td>
+                  <td className="p-2">
+                    {new Date(exp.date).toLocaleDateString()}
+                  </td>
                   <td className="p-2">{exp.category}</td>
                   <td className="p-2">${exp.amount}</td>
                   <td className="p-2">{exp.note}</td>
+                  <td className="p-2 space-x-2">
+                    <button
+                      onClick={() => setEditingExpense(exp)} // yeh function edit state me data set karega
+                      className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded"
+                    >
+                      Edit
+                    </button>
+
+                    <button
+                      onClick={() => deleteExpense(exp._id)}
+                      className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
+                    >
+                      Delete
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
