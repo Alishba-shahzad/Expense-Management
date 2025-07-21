@@ -427,14 +427,14 @@ const Dashboard = () => {
                   <td className="p-2 space-x-2">
                     <button
                       onClick={() => setEditingExpense(exp)} // yeh function edit state me data set karega
-                      className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded"
+                      className="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded"
                     >
                       Edit
                     </button>
 
                     <button
                       onClick={() => deleteExpense(exp._id)}
-                      className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
+                      className="bg-red-700 hover:bg-red-800 text-white px-3 py-1 rounded"
                     >
                       Delete
                     </button>
