@@ -52,7 +52,7 @@ export default function AddExpenseForm({
     try {
       let res;
       if (editingExpense) {
-        // 🟡 Update Existing Expense
+        //Update Existing Expense
         res = await fetch(
           `http://localhost:5000/api/expenses/${editingExpense._id}`,
           {
@@ -62,7 +62,7 @@ export default function AddExpenseForm({
           }
         );
       } else {
-        // 🟢 Add New Expense
+        //Add New Expense
         res = await fetch("http://localhost:5000/api/expenses", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -90,9 +90,10 @@ export default function AddExpenseForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-4 bg-white p-4 rounded shadow max-w-md mx-auto"
+      className="space-y-4 bg-gray-200 p-5  border border-spacing-5 border-indigo-400 rounded shadow max-w-md mx-auto"
     >
-      <h2 className="text-xl font-bold">
+      
+      <h2 className="text-xl text-center font-bold">
         {editingExpense ? "Edit Expense" : "Add New Expense"}
       </h2>
 
@@ -115,6 +116,7 @@ export default function AddExpenseForm({
           className="border p-2 w-full"
         >
           <option value="Food">Food</option>
+          <option value="Shopping">Shopping</option>
           <option value="Transport">Transport</option>
           <option value="Utilities">Utilities</option>
           <option value="Other">Other</option>
@@ -145,7 +147,7 @@ export default function AddExpenseForm({
       <div className="flex items-center gap-4">
         <button
           type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          className="bg-gradient-to-r from-sky-600 to-sky-700 text-white px-4 py-2 rounded hover:bg-blue-700"
         >
           {editingExpense ? "Update Expense" : "Add Expense"}
         </button>

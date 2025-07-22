@@ -54,7 +54,7 @@ router.put("/:id", async (req, res) => {
 
     res.status(200).json(updatedExpense);
   } catch (err) {
-    console.error("❌ Error updating:", err);
+    console.error(" Error updating:", err);
     res.status(500).json({ message: "Server error while updating" });
   }
 });
