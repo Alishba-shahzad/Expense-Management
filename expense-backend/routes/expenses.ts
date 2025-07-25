@@ -27,7 +27,7 @@ router.post("/", async (req: Request, res: Response) => {
   }
 });
 
-// DELETE /api/expenses/:id → delete by ID
+// DELETE 
 router.delete("/:id", async (req: Request, res: Response) => {
   try {
     await Expense.findByIdAndDelete(req.params.id);
@@ -38,7 +38,7 @@ router.delete("/:id", async (req: Request, res: Response) => {
 });
 
 // PUT /api/expenses/:id
-// PUT /api/expenses/:id
+
 router.put("/:id", async (req, res) => {
   const { id } = req.params;
   const updatedData = req.body;
