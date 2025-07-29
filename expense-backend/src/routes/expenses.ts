@@ -4,7 +4,7 @@ import verifyToken, { AuthenticatedRequest } from "../firebase/verifyToken";
 
 const router = Router();
 
-//  SECURE: Add New Expense with Firebase Auth Token
+//  Secure
 router.post("/add-expense", verifyToken, async (req: AuthenticatedRequest, res) => {
   const { category, amount, note, date } = req.body;
   const userId = req.user?.uid;
@@ -32,7 +32,7 @@ router.post("/add-expense", verifyToken, async (req: AuthenticatedRequest, res) 
   }
 });
 
-// ✅ GET all expenses for a user (by userId in URL param)
+//  GET
 router.get("/:userId", async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
@@ -43,7 +43,7 @@ router.get("/:userId", async (req: Request, res: Response) => {
   }
 });
 
-// ✅ DELETE expense by ID
+//  DELETE 
 router.delete("/:id", async (req: Request, res: Response) => {
   try {
     await Expense.findByIdAndDelete(req.params.id);
@@ -53,7 +53,7 @@ router.delete("/:id", async (req: Request, res: Response) => {
   }
 });
 
-// ✅ UPDATE expense by ID
+//  UPDATE 
 router.put("/:id", async (req: Request, res: Response) => {
   const { id } = req.params;
   const updatedData = req.body;
@@ -73,5 +73,6 @@ router.put("/:id", async (req: Request, res: Response) => {
     res.status(500).json({ message: "Server error while updating" });
   }
 });
+
 
 export default router;

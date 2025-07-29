@@ -6,7 +6,7 @@ export interface IExpense extends Document {
   amount: number;
   note?: string;
   date: Date;
-}
+} 
 
 const expenseSchema: Schema<IExpense> = new Schema({
   userId: { type: String, required: true },
