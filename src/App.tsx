@@ -4,7 +4,7 @@ import Signup from "./pages/signup";
 import Dashboard from "./component/dashboard";
 import { auth } from "./firebase";
 import { useEffect, useState } from "react";
-
+ 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [checkingAuth, setCheckingAuth] = useState(true); // 🔁 New loading state
